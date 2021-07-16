@@ -1,7 +1,11 @@
-import 'package:clone_ig/mock_data.dart';
-import 'package:clone_ig/widgets/circle_profile_widget.dart';
-import 'package:clone_ig/widgets/post_widget.dart';
 import 'package:flutter/material.dart';
+
+import '../mock_data.dart';
+import '../widgets/bottom_appbar.dart';
+import '../widgets/circle_profile_widget.dart';
+import '../widgets/custom_icons/message_icon.dart';
+import '../widgets/ig_logo.dart';
+import '../widgets/post_widget.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,38 +13,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.home),
-              iconSize: 35,
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.search_outlined),
-              iconSize: 35,
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.add_box_outlined),
-              iconSize: 35,
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.favorite_border_outlined),
-              iconSize: 35,
-            ),
-            ProfileCircleWidget(user: myProfile, radius: 48),
-          ],
-        ),
-      ),
+      bottomNavigationBar: MyBottomAppBar(),
       body: SafeArea(
         child: Column(
           children: [
             _buildAppBar(),
+            SizedBox(height: 5),
             Expanded(
               child: ListView.builder(
                 itemCount: allPosts.length + 1,
@@ -48,7 +26,8 @@ class HomePage extends StatelessWidget {
                   if (index == 0) {
                     return _buildStoryBar();
                   }
-                  return PostWidget(post: allPosts[index - 1]);
+                  final post = allPosts[index - 1];
+                  return PostWidget(post: post);
                 },
               ),
             ),
@@ -60,8 +39,13 @@ class HomePage extends StatelessWidget {
 
   Widget _buildStoryBar() {
     return Container(
-      height: 120,
-      color: Colors.white,
+      height: 115,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(width: 0.5, color: Colors.grey.withOpacity(0.5)),
+        ),
+      ),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: allStory.length + 1,
@@ -70,7 +54,10 @@ class HomePage extends StatelessWidget {
             return Column(
               children: [
                 ProfileCircleWidget(radius: 100, user: myProfile),
-                Text('Your story'),
+                Text(
+                  'Your story',
+                  style: TextStyle(color: Colors.black54),
+                ),
               ],
             );
           }
@@ -92,17 +79,13 @@ class HomePage extends StatelessWidget {
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            'Instagram',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          Padding(
+            padding: const EdgeInsets.all(9.0),
+            child: InstagramLogo(),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.message,
-            ),
-          )
+          IconButton(onPressed: () {}, icon: MessageIcon())
         ],
       ),
     );

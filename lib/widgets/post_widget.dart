@@ -1,6 +1,12 @@
+import 'dart:math';
+
+import 'package:clone_ig/pages/profile_page.dart';
+import 'package:clone_ig/widgets/photo_box_square.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 import 'package:clone_ig/mock_data.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../model.dart';
 import 'circle_profile_widget.dart';
@@ -13,20 +19,28 @@ class PostWidget extends StatelessWidget {
 
   final Post post;
 
+  User get randomUser {
+    final _random = new Random();
+    return allUsers[_random.nextInt(allUsers.length)];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.only(top: 5, bottom: 5),
+      padding: const EdgeInsets.only(top: 7, bottom: 5),
       margin: const EdgeInsets.only(bottom: 5),
       child: Column(
         children: [
-          _buildPostBar(),
+          _buildPostBar(context),
           PostContent(post: post),
           _buildBottomBar(),
+          const SizedBox(height: 2),
           _buildLikeStatus(),
+          const SizedBox(height: 2),
           _buildCaption(),
-          _buildViewAllComment(),
+          post.commentsCount > 0 ? _buildViewAllComment() : SizedBox.shrink(),
+          const SizedBox(height: 2),
           _buildPostedDate()
         ],
       ),
@@ -39,7 +53,7 @@ class PostWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
         child: Text(
-          '5 hours ago',
+          '${post.timeAgo}',
           style: TextStyle(
             color: Colors.black.withOpacity(0.5),
             fontSize: 12,
@@ -53,9 +67,9 @@ class PostWidget extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
         child: Text(
-          'View all 5 comments',
+          'View all ${post.commentsCount} comments',
           style: TextStyle(color: Colors.black.withOpacity(0.5)),
         ),
       ),
@@ -68,8 +82,8 @@ class PostWidget extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'Long',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            post.user.username,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(width: 5),
           Text('Good night', style: TextStyle(fontSize: 16)),
@@ -78,72 +92,75 @@ class PostWidget extends StatelessWidget {
     );
   }
 
-  Row _buildLikeStatus() {
-    return Row(
-      children: [
-        Container(
-          width: 65,
-          child: Stack(
-            children: [
-              Positioned(
-                right: -1,
-                child: ProfileCircleWidget(radius: 37, user: myProfile),
-              ),
-              Positioned(
-                  right: 12,
-                  child: ProfileCircleWidget(radius: 37, user: myProfile)),
-              Positioned(
-                  child: ProfileCircleWidget(radius: 37, user: myProfile)),
-            ],
+  Widget _buildLikeStatus() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 66,
+            child: Stack(
+              children: [
+                Positioned(
+                  right: 1,
+                  child: ProfileCircleWidget(radius: 34, user: randomUser),
+                ),
+                Positioned(
+                    right: 19,
+                    child: ProfileCircleWidget(radius: 34, user: randomUser)),
+                Positioned(
+                    child: ProfileCircleWidget(radius: 34, user: randomUser)),
+              ],
+            ),
           ),
-        ),
-        Text('Liked by', style: TextStyle(fontSize: 16)),
-        SizedBox(width: 5),
-        Text(
-          'Long',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-        ),
-        SizedBox(width: 5),
-        Text('and', style: TextStyle(fontSize: 16)),
-        SizedBox(width: 5),
-        Text(
-          '${post.likesCount - 1} others',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-        ),
-      ],
+          SizedBox(width: 5),
+          Text('Liked by', style: TextStyle(fontSize: 16)),
+          SizedBox(width: 5),
+          Text(
+            randomUser.username,
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          SizedBox(width: 5),
+          Text('and', style: TextStyle(fontSize: 16)),
+          SizedBox(width: 5),
+          Text(
+            '${post.likesCount - 1} others',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+        ],
+      ),
     );
   }
 
   Container _buildBottomBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Stack(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.favorite_outline, size: 30),
-                  SizedBox(width: 10),
-                  Icon(Icons.chat_outlined, size: 30),
-                  SizedBox(width: 10),
-                  Icon(Icons.share, size: 30),
-                ],
-              ),
-              Icon(
-                Icons.bookmark_outline,
-                size: 30,
-              ),
+              HeartButton(),
+              SizedBox(width: 15),
+              Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(math.pi),
+                  child: Icon(FontAwesomeIcons.comment, size: 26)),
+              SizedBox(width: 15),
+              Icon(FontAwesomeIcons.paperPlane, size: 25),
             ],
           ),
-          Center(child: Icon(Icons.more_horiz))
+          Icon(
+            Icons.bookmark_outline,
+            size: 30,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildPostBar() {
+  Widget _buildPostBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(right: 8, left: 8, bottom: 5),
       child: Row(
@@ -153,15 +170,50 @@ class PostWidget extends StatelessWidget {
             children: [
               ProfileCircleWidget(radius: 50, user: post.user),
               SizedBox(width: 8),
-              Text(
-                post.user.username,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+              InkWell(
+                onTap: () => _openProfileScreen(context, post.user),
+                child: Text(
+                  post.user.username,
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                ),
               ),
             ],
           ),
           Icon(Icons.more_vert),
         ],
       ),
+    );
+  }
+
+  void _openProfileScreen(BuildContext context, User user) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ProfilePage(user: user)));
+  }
+}
+
+class HeartButton extends StatefulWidget {
+  const HeartButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _HeartButtonState createState() => _HeartButtonState();
+}
+
+class _HeartButtonState extends State<HeartButton> {
+  bool isLiked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          isLiked = !isLiked;
+        });
+      },
+      child: isLiked
+          ? Icon(FontAwesomeIcons.solidHeart, size: 26, color: Colors.red)
+          : Icon(FontAwesomeIcons.heart, size: 26),
     );
   }
 }
@@ -196,27 +248,52 @@ class _PostContentState extends State<PostContent> {
       child: Stack(
         children: [
           PageView.builder(
+            itemCount: widget.post.imageUrls.length,
             onPageChanged: (index) {
               setState(() {
                 imageIndex = index + 1;
               });
             },
-            itemCount: widget.post.imageUrls.length,
             itemBuilder: (context, index) {
               final photo = widget.post.imageUrls[index];
-              return Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(photo),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              return PhotoBoxSquare(
+                size: MediaQuery.of(context).size.width,
+                imageUrl: photo,
               );
             },
           ),
           widget.post.imageUrls.isNotEmpty && widget.post.imageUrls.length != 1
               ? _buildImageCount()
               : SizedBox.shrink(),
+        ],
+      ),
+    );
+  }
+
+  Container _buildBottomBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Stack(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.favorite_outline, size: 30),
+                  SizedBox(width: 10),
+                  Icon(Icons.chat_outlined, size: 30),
+                  SizedBox(width: 10),
+                  Icon(Icons.share, size: 30),
+                ],
+              ),
+              Icon(
+                Icons.bookmark_outline,
+                size: 30,
+              ),
+            ],
+          ),
+          Center(child: Icon(Icons.more_horiz))
         ],
       ),
     );
