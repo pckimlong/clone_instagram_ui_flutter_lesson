@@ -1,10 +1,11 @@
-import 'package:clone_ig/mock_data.dart';
-import 'package:clone_ig/widgets/bottom_appbar.dart';
-import 'package:clone_ig/widgets/circle_profile_widget.dart';
-import 'package:clone_ig/widgets/photo_box_square.dart';
 import 'package:flutter/material.dart';
 
-import 'package:clone_ig/model.dart';
+import '../assets/mock_data/user_data.dart';
+import '../helper/helper.dart' as helper;
+import '../model/user_model.dart';
+import '../widgets/bottom_appbar.dart';
+import '../widgets/circle_profile_widget.dart';
+import '../widgets/photo_box_square.dart';
 
 class ProfilePage extends StatelessWidget {
   final User user;
@@ -13,17 +14,10 @@ class ProfilePage extends StatelessWidget {
     required this.user,
   }) : super(key: key);
 
-  List<Story> get userStory {
-    return allStory.where((story) => story.user == user).toList();
-  }
-
-  List<Post> get userPosts {
-    return allPosts.where((post) => post.user == user).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       bottomNavigationBar: MyBottomAppBar(),
       body: SafeArea(
         child: Column(
@@ -41,7 +35,7 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 1),
                       _buildFollowerStatus(),
                       _buildActionButton(context),
-                      userStory.length > 0
+                      helper.getStoryOfAnUser(user).length > 0
                           ? _buildStoryBar()
                           : SizedBox.shrink(),
                     ],
@@ -60,23 +54,7 @@ class ProfilePage extends StatelessWidget {
   Column _buildPostContent() {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.grid_4x4),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.tv),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.person),
-            ),
-          ],
-        ),
+        _buildPostTabBar(),
         GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
@@ -85,12 +63,12 @@ class ProfilePage extends StatelessWidget {
           ),
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: userPosts.length,
+          itemCount: helper.getPostOfAnUser(user).length,
           itemBuilder: (context, index) {
-            final postData = userPosts[index];
+            final postData = helper.getPostOfAnUser(user)[index];
             return PhotoBoxSquare(
               size: MediaQuery.of(context).size.width / 3,
-              imageUrl: userPosts[index].imageUrls[0],
+              imageUrl: postData.imageUrls[0],
             );
           },
         ),
@@ -98,14 +76,40 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  Container _buildPostTabBar() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(width: 0.5, color: Colors.grey.withOpacity(0.2)),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            child: Center(child: Icon(Icons.grid_on)),
+          ),
+          SizedBox(width: 10),
+          Container(
+            child: Center(child: Icon(Icons.person)),
+          ),
+        ],
+      ),
+    );
+  }
+
   SizedBox _buildStoryBar() {
+    final stories = helper.getStoryOfAnUser(user);
     return SizedBox(
       height: 80,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: userStory.length,
+        itemCount: stories.length,
         itemBuilder: (context, index) {
-          final userData = userStory[index].user;
+          final userData = stories[index].addedBy;
           return ProfileCircleWidget(
             user: userData,
             radius: 100,

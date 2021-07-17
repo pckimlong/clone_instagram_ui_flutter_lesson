@@ -1,15 +1,15 @@
-import 'dart:math';
-
-import 'package:clone_ig/pages/profile_page.dart';
-import 'package:clone_ig/widgets/photo_box_square.dart';
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:clone_ig/mock_data.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../model.dart';
+import '../helper/helper.dart' as helper;
+import '../model/post_model.dart';
+import '../model/user_model.dart';
+import '../pages/profile_page.dart';
 import 'circle_profile_widget.dart';
+import 'like_button.dart';
+import 'post_content_card.dart';
 
 class PostWidget extends StatelessWidget {
   const PostWidget({
@@ -19,11 +19,6 @@ class PostWidget extends StatelessWidget {
 
   final Post post;
 
-  User get randomUser {
-    final _random = new Random();
-    return allUsers[_random.nextInt(allUsers.length)];
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,15 +27,15 @@ class PostWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 5),
       child: Column(
         children: [
-          _buildPostBar(context),
+          _buildPostTopBar(context),
           PostContent(post: post),
           _buildBottomBar(),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           _buildLikeStatus(),
-          const SizedBox(height: 2),
-          _buildCaption(),
+          SizedBox(height: 2),
+          _buildCaption(context),
           post.commentsCount > 0 ? _buildViewAllComment() : SizedBox.shrink(),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           _buildPostedDate()
         ],
       ),
@@ -76,17 +71,21 @@ class PostWidget extends StatelessWidget {
     );
   }
 
-  Padding _buildCaption() {
+  Padding _buildCaption(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            post.user.username,
+            post.postedBy.username,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(width: 5),
-          Text('Good night', style: TextStyle(fontSize: 16)),
+          Text(
+            post.caption,
+            style: TextStyle(fontSize: 16),
+          ),
         ],
       ),
     );
@@ -98,18 +97,21 @@ class PostWidget extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 66,
+            width: 64,
             child: Stack(
               children: [
                 Positioned(
                   right: 1,
-                  child: ProfileCircleWidget(radius: 34, user: randomUser),
+                  child: ProfileCircleWidget(
+                      radius: 30, user: helper.getRandomUser),
                 ),
                 Positioned(
-                    right: 19,
-                    child: ProfileCircleWidget(radius: 34, user: randomUser)),
+                    right: 21,
+                    child: ProfileCircleWidget(
+                        radius: 30, user: helper.getRandomUser)),
                 Positioned(
-                    child: ProfileCircleWidget(radius: 34, user: randomUser)),
+                    child: ProfileCircleWidget(
+                        radius: 30, user: helper.getRandomUser)),
               ],
             ),
           ),
@@ -117,7 +119,7 @@ class PostWidget extends StatelessWidget {
           Text('Liked by', style: TextStyle(fontSize: 16)),
           SizedBox(width: 5),
           Text(
-            randomUser.username,
+            helper.getRandomUser.username,
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           SizedBox(width: 5),
@@ -134,7 +136,7 @@ class PostWidget extends StatelessWidget {
 
   Container _buildBottomBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -143,37 +145,38 @@ class PostWidget extends StatelessWidget {
             children: [
               HeartButton(),
               SizedBox(width: 15),
-              Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(math.pi),
-                  child: Icon(FontAwesomeIcons.comment, size: 26)),
+              _commentButton,
               SizedBox(width: 15),
               Icon(FontAwesomeIcons.paperPlane, size: 25),
             ],
           ),
-          Icon(
-            Icons.bookmark_outline,
-            size: 30,
-          ),
+          Icon(Icons.bookmark_outline, size: 30),
         ],
       ),
     );
   }
 
-  Widget _buildPostBar(BuildContext context) {
+  Transform get _commentButton {
+    return Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.rotationY(math.pi),
+        child: Icon(FontAwesomeIcons.comment, size: 26));
+  }
+
+  Widget _buildPostTopBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(right: 8, left: 8, bottom: 5),
+      padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              ProfileCircleWidget(radius: 50, user: post.user),
+              ProfileCircleWidget(radius: 50, user: post.postedBy),
               SizedBox(width: 8),
               InkWell(
-                onTap: () => _openProfileScreen(context, post.user),
+                onTap: () => _openProfileScreen(context, post.postedBy),
                 child: Text(
-                  post.user.username,
+                  post.postedBy.username,
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               ),
@@ -188,133 +191,5 @@ class PostWidget extends StatelessWidget {
   void _openProfileScreen(BuildContext context, User user) {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => ProfilePage(user: user)));
-  }
-}
-
-class HeartButton extends StatefulWidget {
-  const HeartButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  _HeartButtonState createState() => _HeartButtonState();
-}
-
-class _HeartButtonState extends State<HeartButton> {
-  bool isLiked = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          isLiked = !isLiked;
-        });
-      },
-      child: isLiked
-          ? Icon(FontAwesomeIcons.solidHeart, size: 26, color: Colors.red)
-          : Icon(FontAwesomeIcons.heart, size: 26),
-    );
-  }
-}
-
-class PostContent extends StatefulWidget {
-  const PostContent({
-    Key? key,
-    required this.post,
-  }) : super(key: key);
-
-  final Post post;
-
-  @override
-  _PostContentState createState() => _PostContentState();
-}
-
-class _PostContentState extends State<PostContent> {
-  var totalImage = 0;
-  var imageIndex = 1;
-
-  @override
-  void initState() {
-    super.initState();
-    totalImage = widget.post.imageUrls.length;
-    imageIndex = 1;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.width,
-      child: Stack(
-        children: [
-          PageView.builder(
-            itemCount: widget.post.imageUrls.length,
-            onPageChanged: (index) {
-              setState(() {
-                imageIndex = index + 1;
-              });
-            },
-            itemBuilder: (context, index) {
-              final photo = widget.post.imageUrls[index];
-              return PhotoBoxSquare(
-                size: MediaQuery.of(context).size.width,
-                imageUrl: photo,
-              );
-            },
-          ),
-          widget.post.imageUrls.isNotEmpty && widget.post.imageUrls.length != 1
-              ? _buildImageCount()
-              : SizedBox.shrink(),
-        ],
-      ),
-    );
-  }
-
-  Container _buildBottomBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Stack(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.favorite_outline, size: 30),
-                  SizedBox(width: 10),
-                  Icon(Icons.chat_outlined, size: 30),
-                  SizedBox(width: 10),
-                  Icon(Icons.share, size: 30),
-                ],
-              ),
-              Icon(
-                Icons.bookmark_outline,
-                size: 30,
-              ),
-            ],
-          ),
-          Center(child: Icon(Icons.more_horiz))
-        ],
-      ),
-    );
-  }
-
-  Positioned _buildImageCount() {
-    return Positioned(
-      right: 12,
-      top: 12,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(16)),
-        child: Text(
-          '$imageIndex/$totalImage',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
   }
 }

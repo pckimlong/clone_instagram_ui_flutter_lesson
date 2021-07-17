@@ -1,7 +1,7 @@
-import 'package:clone_ig/mock_data.dart';
+import 'package:clone_ig/assets/mock_data/story_data.dart';
+import 'package:clone_ig/model/user_model.dart';
 import 'package:flutter/material.dart';
-
-import '../model.dart';
+import 'package:clone_ig/helper/helper.dart' as helper;
 
 class ProfileCircleWidget extends StatelessWidget {
   const ProfileCircleWidget({
@@ -12,11 +12,6 @@ class ProfileCircleWidget extends StatelessWidget {
 
   final User user;
   final double radius;
-
-  // Check story list if user has added story return true , if  not return false
-  bool get userHasStory {
-    return allStory.where((story) => story.user == user).toList().isNotEmpty;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +50,7 @@ class ProfileCircleWidget extends StatelessWidget {
       child: Container(
         width: radius * 0.8,
         height: radius * 0.8,
-        decoration: userHasStory
+        decoration: helper.checkIfUserHasStory(user)
             ? BoxDecoration(
                 color: Colors.red,
                 shape: BoxShape.circle,
