@@ -1,34 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 
 import '../assets/mock_data/current_user-data.dart';
 import '../assets/mock_data/post_data.dart';
 import '../assets/mock_data/story_data.dart';
 import '../model/story_model.dart';
+import '../provider/navigator_provider.dart';
 import '../widgets/add_story_button.dart';
 import '../widgets/bottom_appbar.dart';
 import '../widgets/circle_profile_widget.dart';
 import '../widgets/ig_logo.dart';
 import '../widgets/post_widget.dart';
+import 'profile_page.dart';
+
+enum IgPage { home, profile }
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: MyBottomAppBar(),
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildCustomAppBar(),
-            SizedBox(height: 5),
-            _buildPostList(),
-          ],
-        ),
+        child: _buildBody(context),
       ),
     );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    final page = context.watch<NavigateProvider>().initPage;
+    if (page == IgPage.home) {
+      return Column(
+        children: [
+          _buildCustomAppBar(),
+          SizedBox(height: 5),
+          _buildPostList(),
+        ],
+      );
+    }
+    if (page == IgPage.profile) {
+      return ProfilePage(user: myProfile);
+    }
+    return Container();
   }
 
   Expanded _buildPostList() {

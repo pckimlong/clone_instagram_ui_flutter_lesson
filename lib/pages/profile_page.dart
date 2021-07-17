@@ -9,8 +9,10 @@ import '../widgets/photo_box_square.dart';
 
 class ProfilePage extends StatelessWidget {
   final User user;
+  final bool openAsTab;
   const ProfilePage({
     Key? key,
+    this.openAsTab = false,
     required this.user,
   }) : super(key: key);
 
@@ -18,7 +20,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: MyBottomAppBar(),
+      bottomNavigationBar: openAsTab ? MyBottomAppBar() : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -301,10 +303,12 @@ class ProfilePage extends StatelessWidget {
       children: [
         Row(
           children: [
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back, size: iconSize),
-            ),
+            openAsTab
+                ? IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.arrow_back, size: iconSize),
+                  )
+                : SizedBox.shrink(),
             SizedBox(width: 12),
             Text(
               user.username,

@@ -1,8 +1,11 @@
 import 'package:clone_ig/assets/mock_data/current_user-data.dart';
+import 'package:clone_ig/pages/home_page.dart';
 import 'package:clone_ig/pages/profile_page.dart';
+import 'package:clone_ig/provider/navigator_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'circle_profile_widget.dart';
+import 'package:provider/provider.dart';
 
 class MyBottomAppBar extends StatelessWidget {
   const MyBottomAppBar({Key? key}) : super(key: key);
@@ -14,8 +17,8 @@ class MyBottomAppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.home),
+            onPressed: () => _homePage(context),
+            icon: _buildHomeBotton(context),
             iconSize: 30,
           ),
           IconButton(
@@ -35,15 +38,30 @@ class MyBottomAppBar extends StatelessWidget {
           ),
           InkWell(
             onTap: () => _myProfilePage(context),
-            child: ProfileCircleWidget(user: myProfile, radius: 36),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ProfileCircleWidget(user: myProfile, radius: 36),
+            ),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildHomeBotton(BuildContext context) {
+    final page = context.watch<NavigateProvider>().initPage;
+    if (page == IgPage.home) {
+      return Icon(Icons.home);
+    } else {
+      return Icon(Icons.home_outlined);
+    }
+  }
+
   void _myProfilePage(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => ProfilePage(user: myProfile)));
+    context.read<NavigateProvider>().changePage(IgPage.profile);
+  }
+
+  void _homePage(BuildContext context) {
+    context.read<NavigateProvider>().changePage(IgPage.home);
   }
 }
