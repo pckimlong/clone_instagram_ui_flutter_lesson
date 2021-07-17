@@ -196,7 +196,7 @@ class ProfilePage extends StatelessWidget {
         Text('Followed by', style: TextStyle(fontSize: 16)),
         SizedBox(width: 5),
         Text(
-          allUsers[1].name,
+          helper.getRandomUser.name,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
