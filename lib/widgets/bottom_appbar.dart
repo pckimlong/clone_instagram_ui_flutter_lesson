@@ -1,7 +1,7 @@
-import 'package:clone_ig/assets/mock_data/current_user-data.dart';
-import 'package:clone_ig/pages/home_page.dart';
-import 'package:clone_ig/pages/profile_page.dart';
-import 'package:clone_ig/provider/navigator_provider.dart';
+import '../assets/mock_data/current_user-data.dart';
+import '../pages/home_page.dart';
+import '../pages/profile_page.dart';
+import '../provider/navigator_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'circle_profile_widget.dart';

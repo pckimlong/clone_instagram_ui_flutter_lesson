@@ -1,4 +1,4 @@
-import 'package:clone_ig/pages/home_page.dart';
+import '../pages/home_page.dart';
 import 'package:flutter/cupertino.dart';
 
 class NavigateProvider extends ChangeNotifier {

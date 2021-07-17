@@ -1,6 +1,6 @@
-import 'package:clone_ig/assets/mock_data/user_data.dart';
-import 'package:clone_ig/helper/helper.dart';
-import 'package:clone_ig/model/post_model.dart';
+import 'user_data.dart';
+import '../../helper/helper.dart';
+import '../../model/post_model.dart';
 
 import 'current_user-data.dart';
 

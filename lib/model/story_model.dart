@@ -1,4 +1,4 @@
-import 'package:clone_ig/model/user_model.dart';
+import 'user_model.dart';
 import 'package:equatable/equatable.dart';
 
 class Story extends Equatable {

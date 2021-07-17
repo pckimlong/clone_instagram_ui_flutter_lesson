@@ -1,7 +1,7 @@
-import 'package:clone_ig/assets/mock_data/story_data.dart';
-import 'package:clone_ig/model/user_model.dart';
 import 'package:flutter/material.dart';
-import 'package:clone_ig/helper/helper.dart' as helper;
+
+import '../helper/helper.dart' as helper;
+import '../model/user_model.dart';
 
 class ProfileCircleWidget extends StatelessWidget {
   const ProfileCircleWidget({

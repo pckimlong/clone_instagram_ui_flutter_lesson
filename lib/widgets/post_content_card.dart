@@ -1,4 +1,4 @@
-import 'package:clone_ig/model/post_model.dart';
+import '../model/post_model.dart';
 import 'package:flutter/material.dart';
 
 import 'photo_box_square.dart';

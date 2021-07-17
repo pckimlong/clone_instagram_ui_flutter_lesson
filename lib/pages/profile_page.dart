@@ -20,7 +20,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: openAsTab ? MyBottomAppBar() : null,
+      bottomNavigationBar: !openAsTab ? MyBottomAppBar() : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -303,7 +303,7 @@ class ProfilePage extends StatelessWidget {
       children: [
         Row(
           children: [
-            openAsTab
+            !openAsTab
                 ? IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: Icon(Icons.arrow_back, size: iconSize),

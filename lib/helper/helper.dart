@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:clone_ig/assets/mock_data/random_image.dart';
-import 'package:clone_ig/assets/mock_data/user_data.dart';
-import 'package:clone_ig/model/post_model.dart';
-import 'package:clone_ig/model/story_model.dart';
-import 'package:clone_ig/model/user_model.dart';
+import '../assets/mock_data/random_image.dart';
+import '../assets/mock_data/user_data.dart';
+import '../model/post_model.dart';
+import '../model/story_model.dart';
+import '../model/user_model.dart';
 
 import '../assets/mock_data/post_data.dart';
 import '../assets/mock_data/story_data.dart';

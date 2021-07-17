@@ -1,4 +1,4 @@
-import 'package:clone_ig/model/user_model.dart';
+import '../../model/user_model.dart';
 
 final allUsers = [
   User(

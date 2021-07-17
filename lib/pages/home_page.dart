@@ -30,6 +30,7 @@ class HomePage extends StatelessWidget {
 
   Widget _buildBody(BuildContext context) {
     final page = context.watch<NavigateProvider>().initPage;
+
     if (page == IgPage.home) {
       return Column(
         children: [
@@ -40,7 +41,7 @@ class HomePage extends StatelessWidget {
       );
     }
     if (page == IgPage.profile) {
-      return ProfilePage(user: myProfile);
+      return ProfilePage(user: myProfile, openAsTab: true);
     }
     return Container();
   }
